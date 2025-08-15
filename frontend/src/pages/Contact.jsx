@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { GrLocation } from "react-icons/gr";
 import { IoCallOutline } from "react-icons/io5";
@@ -11,6 +11,31 @@ import { FaPhoneAlt } from "react-icons/fa";
 import '../styles/Contact.css';
 
 const Contact = () => {
+    const [result, setResult] = useState("");
+
+    const onSubmit = async (event) => {
+        event.preventDefault();
+        setResult("Sending....");
+        const formData = new FormData(event.target);
+
+        formData.append("access_key", "bb647208-b999-4522-b994-28c72283e68f");
+
+        const response = await fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            setResult("Form Submitted Successfully");
+            event.target.reset();
+        } else {
+            console.log("Error", data);
+            setResult(data.message);
+        }
+    };
+
     return (
         <div className="contact-page">
             {/* Hero Section */}
@@ -26,12 +51,13 @@ const Contact = () => {
                 {/* Left Column - Contact Form */}
                 <div className="contact-form-container">
                     <h3 className="form-heading">Send Us a Message</h3>
-                    <form className="contact-form">
+                    <form className="contact-form" onSubmit={onSubmit}>
                         {/* Name */}
                         <div className="form-group">
                             <label className="form-label">Full Name <span className="form-required">*</span></label>
                             <input 
                                 type="text" 
+                                name="name"
                                 className="form-input" 
                                 placeholder="Your full name"
                                 required
@@ -43,6 +69,7 @@ const Contact = () => {
                             <label className="form-label">Email <span className="form-required">*</span></label>
                             <input 
                                 type="email" 
+                                name="email"
                                 className="form-input" 
                                 placeholder="your.email@example.com"
                                 required
@@ -54,6 +81,7 @@ const Contact = () => {
                             <label className="form-label">Phone Number</label>
                             <input 
                                 type="tel" 
+                                name="phone"
                                 className="form-input" 
                                 placeholder="+91 9876543210"
                             />
@@ -62,7 +90,7 @@ const Contact = () => {
                         {/* District */}
                         <div className="form-group">
                             <label className="form-label">District</label>
-                            <select className="form-select">
+                            <select name="district" className="form-select">
                                 <option value="">Select your district</option>
                                 <option value="hisar">Hisar</option>
                                 <option value="rohtak">Rohtak</option>
@@ -77,7 +105,7 @@ const Contact = () => {
                         {/* Subject */}
                         <div className="form-group">
                             <label className="form-label">Subject</label>
-                            <select className="form-select">
+                            <select name="subject" className="form-select">
                                 <option value="">Select subject</option>
                                 <option value="general">General Inquiry</option>
                                 <option value="membership">Party Membership</option>
@@ -92,14 +120,21 @@ const Contact = () => {
                         <div className="form-group">
                             <label className="form-label">Message</label>
                             <textarea 
+                                name="message"
                                 className="form-textarea" 
                                 placeholder="Write your message here..."
                                 rows="4"
+                                required
                             ></textarea>
                         </div>
 
                         <button type="submit" className="form-button">Submit Message</button>
                     </form>
+                    {result && (
+                        <div className={`form-result ${result.includes('Successfully') ? 'success' : 'error'}`}>
+                            {result}
+                        </div>
+                    )}
                 </div>
                 {/* Right Column - Office Information */}
                 <div className="contact-cards">
