@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const joinRoutes = require('./routes/join');
+const { router: adminAuthRoutes } = require('./routes/adminAuth');
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 // Routes
 app.use('/api/join', joinRoutes);
+app.use('/api', adminAuthRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
