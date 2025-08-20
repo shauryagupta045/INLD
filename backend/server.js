@@ -9,6 +9,7 @@ const contactRoutes = require('./routes/contact');
 const newsRoutes = require('./routes/news');
 const eventRoutes = require('./routes/events');
 const authRoutes = require('./routes/auth');
+const { router: adminAuthRoutes } = require('./routes/adminAuth');
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminAuthRoutes); // mounted under /api/admin for clarity
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -55,5 +57,5 @@ app.use((err, req, res, next) => {
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
-  console.log(`Health check: http://localhost:${  PORT}/api/health`);
+  console.log(`Health check: http://localhost:${PORT}/api/health`);
 });
