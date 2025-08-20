@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../styles/Navbar.css';
 import { AiFillHome, AiFillHeart } from 'react-icons/ai';
@@ -10,6 +10,7 @@ import { RiAdminFill, RiFileTextFill } from 'react-icons/ri';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const location = useLocation();
 
   const toggleMenu = () => {
@@ -44,6 +45,23 @@ const Navbar = () => {
   const isActive = (path) => {
     return location.pathname === path;
   };
+
+  useEffect(() => {
+    // Check if admin is logged in
+    const checkAdminLogin = () => {
+      const token = localStorage.getItem('adminToken');
+      setIsAdminLoggedIn(!!token);
+    };
+
+    checkAdminLogin();
+    
+    // Listen for storage changes (for logout functionality)
+    window.addEventListener('storage', checkAdminLogin);
+    
+    return () => {
+      window.removeEventListener('storage', checkAdminLogin);
+    };
+  }, []);
 
   return (
     <nav className="navbar">
@@ -154,14 +172,25 @@ const Navbar = () => {
                 <MdContactPhone className="navbar__icon" />
                 <span>Contact</span>
               </Link>
-              <Link 
-                to="/admin/login" 
-                className={`navbar__dropdown-link ${isActive('/admin/login') ? 'active' : ''}`}
-                onClick={handleMoreDropdownClick}
-              >
-                <RiAdminFill className="navbar__icon" />
-                <span>Admin Login</span>
-              </Link>
+              {isAdminLoggedIn ? (
+                <Link 
+                  to="/admin/dashboard" 
+                  className={`navbar__dropdown-link ${isActive('/admin/dashboard') ? 'active' : ''}`}
+                  onClick={handleMoreDropdownClick}
+                >
+                  <RiAdminFill className="navbar__icon" />
+                  <span>Admin Dashboard</span>
+                </Link>
+              ) : (
+                <Link 
+                  to="/admin/login" 
+                  className={`navbar__dropdown-link ${isActive('/admin/login') ? 'active' : ''}`}
+                  onClick={handleMoreDropdownClick}
+                >
+                  <RiAdminFill className="navbar__icon" />
+                  <span>Admin Login</span>
+                </Link>
+              )}
             </div>
           </div>
 
@@ -215,6 +244,25 @@ const Navbar = () => {
               <MdContactPhone className="navbar__icon" />
               <span>Contact</span>
             </Link>
+            {isAdminLoggedIn ? (
+              <Link 
+                to="/admin/dashboard" 
+                className={`navbar__link ${isActive('/admin/dashboard') ? 'active' : ''}`}
+                onClick={closeMenus}
+              >
+                <RiAdminFill className="navbar__icon" />
+                <span>Admin Dashboard</span>
+              </Link>
+            ) : (
+              <Link 
+                to="/admin/login" 
+                className={`navbar__link ${isActive('/admin/login') ? 'active' : ''}`}
+                onClick={closeMenus}
+              >
+                <RiAdminFill className="navbar__icon" />
+                <span>Admin Login</span>
+              </Link>
+            )}
           </div>
           <Link 
             to="/donate" 
@@ -224,8 +272,6 @@ const Navbar = () => {
             <AiFillHeart className="navbar__icon" />
             <span>Donate</span>
           </Link>
-
-         
         </div>
       </div>
     </nav>
